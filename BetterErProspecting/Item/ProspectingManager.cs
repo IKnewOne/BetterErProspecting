@@ -13,7 +13,7 @@ public partial class ItemBetterErProspectingPick {
 
 	// These are assholes
 	public static Dictionary<string, string> specialOreCodeConversion = new Dictionary<string, string>() {
-		// These have items different than the code used for the material. Funnily enough, both of them are child deposits
+		// These have items different from the code used for the material. Funnily enough, both of them are child deposits
 		{"nativegold", "gold" },
 		{"nativesilver", "silver" },
 		{"lapislazuli", "lapis" }
@@ -26,7 +26,7 @@ public partial class ItemBetterErProspectingPick {
 
 		var span = code.AsSpan();
 		int idx = code.LastIndexOf('_');
-		ReadOnlySpan<char> suffixSpan = idx >= 0 ? span.Slice(idx + 1) : span;
+		ReadOnlySpan<char> suffixSpan = idx >= 0 ? span[(idx + 1)..] : span;
 
 		string suffix = suffixSpan.ToString();
 
@@ -75,14 +75,12 @@ public partial class ItemBetterErProspectingPick {
 
 	public static string getHandbookLinkOrName(IWorldAccessor world, IServerPlayer serverPlayer, string key, string itemName = null, string handbookUrl = null) {
 		itemName ??= Lang.GetL(serverPlayer.LanguageCode, key);
+		if (handbookUrl != null) return $"<a href=\"handbook://{handbookUrl}\">{itemName}</a>";
 
-
-		if (handbookUrl == null) {
-			if (world.GetBlock(key) is Block block) {
-				handbookUrl = GuiHandbookItemStackPage.PageCodeForStack(new ItemStack(block));
-			} else if (world.GetItem(key) is Vintagestory.API.Common.Item item) {
-				handbookUrl = GuiHandbookItemStackPage.PageCodeForStack(new ItemStack(item));
-			}
+		if (world.GetBlock(key) is { } block) {
+			handbookUrl = GuiHandbookItemStackPage.PageCodeForStack(new ItemStack(block));
+		} else if (world.GetItem(key) is { } item) {
+			handbookUrl = GuiHandbookItemStackPage.PageCodeForStack(new ItemStack(item));
 		}
 
 		return handbookUrl != null ? $"<a href=\"handbook://{handbookUrl}\">{itemName}</a>" : itemName;
@@ -127,13 +125,12 @@ public partial class ItemBetterErProspectingPick {
 	private static bool breakIsPropickable(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel, ref int damage) {
 		Block block = world.BlockAccessor.GetBlock(blockSel.Position);
 
-		if (!block?.Attributes?["propickable"].AsBool(false) == true) {
-			block.OnBlockBroken(world, blockSel.Position, byPlayer, 1);
+		if (!block?.Attributes?["propickable"].AsBool() == true) {
+			block.OnBlockBroken(world, blockSel.Position, byPlayer);
 			damage = 1;
 			return false;
-		} else {
-			block.OnBlockBroken(world, blockSel.Position, byPlayer, 0);
 		}
+		block?.OnBlockBroken(world, blockSel.Position, byPlayer, 0);
 
 		return true;
 	}

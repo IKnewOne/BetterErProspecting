@@ -1,5 +1,4 @@
-﻿using BetterErProspecting.Calculator;
-using Vintagestory.API.Common.CommandAbbr;
+﻿using Vintagestory.API.Common.CommandAbbr;
 
 namespace BetterErProspecting.Prospecting;
 
@@ -7,10 +6,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Config;
 using Item;
 using Item.Data;
 using HydrateOrDiedrate;
@@ -26,24 +23,27 @@ using Vintagestory.GameContent;
 using Vintagestory.ServerMods;
 
 public class ProspectingSystem : ModSystem {
-	private static ModConfig config => ModConfig.Instance;
 	private static ILogger logger => BetterErProspect.Logger;
-	private bool isReprospecting = false;
+	private bool isReprospecting;
 	private ICoreServerAPI sapi;
 
-	// For other mods
-	public Double triesPerChunkScaleFactor => config.TriesPerChunkScaleFactor;
+	public override void StartPre(ICoreAPI api) {
+		base.StartPre(api);
+		sapi = api as ICoreServerAPI;
+	}
 
 	public override void StartServerSide(ICoreServerAPI api) {
 		base.StartServerSide(api);
 		sapi = api;
 
-		api.ChatCommands.GetOrCreate("reprospect")
-		.RequiresPrivilege(Privilege.controlserver)
-		.WithDesc("Regenerates prospecting data for all players ( including offline ). Optionally only for one player. Expensive operation.")
-		.WithExamples("/reprospect", "/reprospect KnewOne")
-		.WithArgs(new OnlinePlayerArgParser("player", api, isMandatoryArg: false))
-		.HandleWith(Reprospect);
+		api.ChatCommands.GetOrCreate("btrpr")
+			.RequiresPrivilege(Privilege.controlserver)
+			.BeginSub("reprospect")
+				.WithDesc("Regenerates prospecting data for all players ( including offline ). Optionally only for one player. Expensive operation.")
+				.WithExamples("/btrpr reprospect", "/btrpr reprospect KnewOne")
+				.WithArgs(new OnlinePlayerArgParser("player", api, isMandatoryArg: false))
+				.HandleWith(Reprospect)
+			.EndSub();
 	}
 
 	private TextCommandResult Reprospect(TextCommandCallingArgs args) {
@@ -51,8 +51,11 @@ public class ProspectingSystem : ModSystem {
 			return TextCommandResult.Error("Please wait before the previous command ends");
 		}
 
+		var caller = args.Caller.Player as IServerPlayer;
+		var targetPlayer = args.Parsers[0].GetValue() as IServerPlayer;
+
 		// Background
-		Task.Run(() => { ReprospectTask(args); });
+		Task.Run(() => { _ = ReprospectTask(caller, targetPlayer); });
 
 		return TextCommandResult.Success("[BetterEr Prospect] Began reprospecting");
 	}
@@ -75,9 +78,8 @@ public class ProspectingSystem : ModSystem {
 	}
 
 	// This might create lag or memory issues. Need more feedback on large world/many players
-	private async Task ReprospectTask(TextCommandCallingArgs args) {
-		var caller = args.Caller.Player as IServerPlayer;
-		var targetPlayer = args.Parsers[0].GetValue() as IServerPlayer;
+	public async Task ReprospectTask(IServerPlayer caller, IServerPlayer targetPlayer) {
+
 		int countSucc = 0;
 		int countUnload = 0;
 
@@ -87,8 +89,11 @@ public class ProspectingSystem : ModSystem {
 				targetPlayer == null ? "all" : targetPlayer);
 
 			var world = sapi.World;
-			var msom = sapi.ModLoader.GetModSystem<ModSystemOreMap>();
 			var oml = sapi.ModLoader.GetModSystem<WorldMapManager>().MapLayers.FirstOrDefault(ml => ml is OreMapLayer) as OreMapLayer;
+
+			if (oml == null) {
+				return;
+			}
 
 			if (isReprospecting)
 				return;
@@ -99,9 +104,7 @@ public class ProspectingSystem : ModSystem {
 			var allPlayers = world.AllPlayers;
 			foreach (var player in allPlayers) { oml.getOrLoadReadings(player); }
 
-			foreach (var (key, readings) in oml.PropickReadingsByPlayer) {
-				var player = world.PlayerByUid(key) as IServerPlayer;
-
+			foreach (var (_, readings) in oml.PropickReadingsByPlayer) {
 				// Step 1: Collect all unique chunks for this player's readings
 				var chunksToLoad = new HashSet<(int cx, int cz)>();
 				foreach (var reading in readings) {
@@ -120,18 +123,18 @@ public class ProspectingSystem : ModSystem {
 				await Task.WhenAll(chunksToLoad.Select(c => EnsureChunkLoaded(c.cx, c.cz)));
 
 				// Step 3: Process readings in parallel
-				var updatedReadings = await Task.WhenAll(readings.Select(async reading => {
+				var updatedReadings = await Task.WhenAll(readings.Select(reading => {
 					var readingBlock = reading.Position.AsBlockPos;
 					var readingChunk = sapi.WorldManager.GetChunk(readingBlock);
 
 					if (readingChunk == null) {
 						Interlocked.Increment(ref countUnload);
-						return reading;
+						return Task.FromResult(reading);
 					}
 
-					generateReadigs(sapi, player, readingBlock, GenerateBlockData(sapi, readingBlock), out PropickReading newReading);
+					generateReadigs(sapi, readingBlock, GenerateBlockData(sapi, readingBlock), out PropickReading newReading);
 					Interlocked.Increment(ref countSucc);
-					return newReading;
+					return Task.FromResult(newReading);
 				}));
 
 				// Step 4: Replace readings safely
@@ -166,9 +169,8 @@ public class ProspectingSystem : ModSystem {
 
 
 	public static Dictionary<string, int> GenerateBlockData(ICoreServerAPI api, BlockPos blockPos, List<DelayedMessage> delayedMessages = null) {
-		delayedMessages ??= new List<DelayedMessage>();
-
-		int radius = (int)(ItemBetterErProspectingPick.densityRadius * ModConfig.Instance.OreDetectionMultiplier);
+		delayedMessages ??= [];
+		const int radius = ItemBetterErProspectingPick.densityRadius;
 
 		int mapHeight = api.World.BlockAccessor.GetTerrainMapheightAt(blockPos);
 		string[] knownBlacklistedCodes = ["flint", "quartz"];
@@ -207,20 +209,10 @@ public class ProspectingSystem : ModSystem {
 		return codeToFoundCount;
 	}
 
-	// Small generator type instead of full text
-	private static string FormatGeneratorType(Type generatorType) {
-		string fullName = generatorType.ToString();
-		string[] parts = fullName.Split('.');
-		if (parts.Length < 2) return fullName;
-		string corePackage = parts[0];
-		string generatorName = parts[^1];
-		return $"{corePackage}...{generatorName}";
-	}
-	public static bool generateReadigs(ICoreServerAPI sapi, IServerPlayer serverPlayer, BlockPos blockPos, Dictionary<string, int> codeToFoundOre, out PropickReading readings, List<DelayedMessage> delayedMessages = null) {
+	public static bool generateReadigs(ICoreServerAPI sapi, BlockPos blockPos, Dictionary<string, int> codeToFoundOre, out PropickReading readings, List<DelayedMessage> delayedMessages = null) {
 		delayedMessages ??= [];
 
 		var world = sapi.World;
-		LCGRandom Rnd = new LCGRandom(sapi.World.Seed);
 		var deposits = sapi.ModLoader.GetModSystem<GenDeposits>()?.Deposits;
 		ProPickWorkSpace ppws = ObjectCacheUtil.TryGet<ProPickWorkSpace>(world.Api, "propickworkspace");
 		if (deposits == null) {
@@ -235,107 +227,45 @@ public class ProspectingSystem : ModSystem {
 		const int zoneDiameter = 2 * radius;
 		int zoneBlocks = zoneDiameter * zoneDiameter * mapHeight;
 
-		int scaledZoneBlocks = (int)(zoneBlocks / (config.OreCalculationDivider * config.OreCalculationDivider));
-
 		readings = new PropickReading
 		{
 			Position = blockPos.ToVec3d()
 		};
-		StringBuilder sb = new StringBuilder();
-
-		StringBuilder tracerVis = new StringBuilder();
-		StringBuilder poorVis = new StringBuilder();
 
 		foreach (var (oreCode, empiricalAmount) in codeToFoundOre) {
 			var reading = new OreReading
 			{
-				PartsPerThousand = (double)empiricalAmount / scaledZoneBlocks * 1000
+				PartsPerThousand = (double)empiricalAmount / zoneBlocks * 1000
 			};
 
-			DepositVariant variant = ppws.depositsByCode[oreCode];
-			var generator = variant.GeneratorInst;
+			// This is basically vanilla logic
+			IBlockAccessor blockAccess = world.BlockAccessor;
+			int regsize = blockAccess.RegionSize;
+			IMapRegion reg = world.BlockAccessor.GetMapRegion(blockPos.X / regsize, blockPos.Z / regsize);
+			int lx = blockPos.X % regsize;
+			int lz = blockPos.Z % regsize;
+			IntDataMap2D map = reg.OreMaps[oreCode];
+			int noiseSize = map.InnerSize;
+			float posXInRegionOre = (float)lx / regsize * noiseSize;
+			float posZInRegionOre = (float)lz / regsize * noiseSize;
+			int oreDist = map.GetUnpaddedColorLerped(posXInRegionOre, posZInRegionOre);
+			int[] blockColumn = ppws.GetRockColumn(blockPos.X, blockPos.Z);
+			ppws.depositsByCode[oreCode].GeneratorInst.GetPropickReading(blockPos, oreDist, blockColumn, out _, out double imaginationLandFactor);
 
-			double? totalFactor = CalculatorManager.GetPercentile(generator, variant, empiricalAmount, radius);
-			bool isNoGeneratorOre = totalFactor == null;
-
-			if (totalFactor == null) {
-				sb.Append($"[BetterEr Prospecting] Found no predefined calculator for {FormatGeneratorType(generator.GetType())} for ore {oreCode}, using default generator");
-
-				IBlockAccessor blockAccess = world.BlockAccessor;
-				int regsize = blockAccess.RegionSize;
-				IMapRegion reg = world.BlockAccessor.GetMapRegion(blockPos.X / regsize, blockPos.Z / regsize);
-				int lx = blockPos.X % regsize;
-				int lz = blockPos.Z % regsize;
-
-				IntDataMap2D map = reg.OreMaps[oreCode];
-				int noiseSize = map.InnerSize;
-
-				float posXInRegionOre = (float)lx / regsize * noiseSize;
-				float posZInRegionOre = (float)lz / regsize * noiseSize;
-
-				int oreDist = map.GetUnpaddedColorLerped(posXInRegionOre, posZInRegionOre);
-				int[] blockColumn = ppws.GetRockColumn(blockPos.X, blockPos.Z);
-
-				ppws.depositsByCode[oreCode].GeneratorInst.GetPropickReading(blockPos, oreDist, blockColumn, out double fakePpt, out double imaginationLandFactor);
-
-				totalFactor = imaginationLandFactor;
-
-
-				sb.AppendLine();
-			}
-
-			double initialFactor = (double)totalFactor;
-
-			if (config.UpliftTraceOres)
-			{
-				// Check for poor uplift first (higher priority)
-				if (totalFactor < 0.15 && (config.UpliftAllToPoor || (isNoGeneratorOre && config.UpliftToPoorNoGeneratorFound))) {
-					totalFactor = 0.15;
-					var upliftReason = config.UpliftAllToPoor ? "P-All" : "P-NoGen";
-
-					if (poorVis.Length == 0) {
-						poorVis.Append($"[BetterEr Prospecting] Uplifted to poor: {initialFactor:0.####} -> {totalFactor:0.####} for {oreCode} ({upliftReason})");
-					} else {
-						poorVis.Append($", {initialFactor:0.####} -> {totalFactor:0.####} for {oreCode} ({upliftReason})");
-					}
-				}
-				// Only uplift to trace if not already uplifted to poor and below mention threshold
-				else if (totalFactor <= PropickReading.MentionThreshold) {
-					totalFactor = PropickReading.MentionThreshold + 1e-6;
-
-					if (tracerVis.Length == 0) {
-						tracerVis.Append($"[BetterEr Prospecting] Uplifted to trace: {initialFactor:0.####} -> {totalFactor:0.####} for {oreCode}");
-					} else {
-						tracerVis.Append($", {initialFactor:0.####} -> {totalFactor:0.####} for {oreCode}");
-					}
-				}
-			}
-
-			reading.TotalFactor = (double)totalFactor;
+			// 0.15 to allow ppt visibility. We will be overwriting this with the patch anyway
+			reading.TotalFactor = Math.Clamp(imaginationLandFactor, 0.15, 1.0);
 			readings.OreReadings[oreCode] = reading;
+
+			var pptTracker = sapi.ModLoader.GetModSystem<Tracking.PptTracker>();
+			pptTracker?.UpdatePpt(oreCode, reading.PartsPerThousand);
 		}
 
-
-		if (config.DebugMode && (sb.Length > 0 || tracerVis.Length > 0 || poorVis.Length > 0)) {
-			if (sb.Length > 0) {
-				delayedMessages.Add(new DelayedMessage(sb.ToString()));
-			}
-			if (poorVis.Length > 0) {
-				delayedMessages.Add(new DelayedMessage(poorVis.ToString()));
-			}
-			if (tracerVis.Length > 0) {
-				delayedMessages.Add(new DelayedMessage(tracerVis.ToString()));
-			}
-		}
-
-
-		addMiscReadings(sapi, serverPlayer, readings, blockPos, delayedMessages);
-
+		addMiscReadings(sapi, readings, blockPos, delayedMessages);
 		return true;
 	}
 
 	#region Compat
-	private static void addMiscReadings(ICoreServerAPI sapi, IServerPlayer serverPlayer, PropickReading readings, BlockPos blockPos, List<DelayedMessage> delayedMessages)
+	private static void addMiscReadings(ICoreServerAPI sapi, PropickReading readings, BlockPos blockPos, List<DelayedMessage> delayedMessages)
 	{
 		// Hydrate Or Diedrate
 		if (!sapi.ModLoader.IsModEnabled("hydrateordiedrate")) return;

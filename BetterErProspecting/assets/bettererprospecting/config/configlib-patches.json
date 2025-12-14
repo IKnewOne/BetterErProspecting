@@ -1,5 +1,5 @@
 {
-  "version": 23,
+  "version": 24,
   "file": "BetterErProspecting.json",
   "settings": [
     {
@@ -45,87 +45,12 @@
       "weight": 1.2
     },
     {
-      "type": "separator",
-      "title": "Density Readings Scaling",
-      "weight": 2,
-      "collapsible": true
-    },
-    {
       "code": "LinearDensityScaling",
       "ingui": "Linear density scaling",
       "type": "boolean",
-      "comment": "Makes vanilla propick readings scale linearly (0-1) instead of the default 0-0.75 range. This affects all propick readings, not just the new density mode. Works instantly. Feedback is appreciated!",
+      "comment": "Makes vanilla propick readings scale linearly (0-1) instead of the default 0-0.75 range. This affects all propick readings, not just the new density mode. Works instantly. Always enabled for new density mode",
       "default": true,
-      "weight": 2.1
-    },
-    {
-      "code": "OreDetectionMultiplier",
-      "ingui": "Ore detection radius multiplier (EXPERIMENTAL)",
-      "type": "float",
-      "comment": "Multiplies the sampling radius for ore detection. By default, ores are sampled in 4 chunks around the current position but PPT are calculated as if it was 1 chunk. A value of 1.0 is the current behavior. 0.5 would mean it only checks the current chunk radius. Higher values will make density readings appear too high, while lower values will require sampling every chunk for accuracy. Feedback is appreciated! /reprospect for old readings",
-      "default": 1.0,
-      "range": {
-        "min": 0.5,
-        "max": 2.0,
-        "step": 0.05
-      },
-      "weight": 3.1
-    },
-    {
-      "code": "OreCalculationDivider",
-      "ingui": "Ore calculation radius multiplier (EXPERIMENTAL)",
-      "type": "float",
-      "comment": "Essentially counters the previous multiplier, but acts in reverse. Identical values of both do nothing, but the higher the detection radius, the bigger is the sampling, which might hit 3 good ores chunks and 6 bad chunks. If using non-default, i suggest having this be somewhat lower than previous. You can further refine results to your liking via linear scaling. /reprospect for old readings",
-      "default": 1.0,
-      "range": {
-        "min": 0.5,
-        "max": 2.0,
-        "step": 0.05
-      },
-      "weight": 3.2
-    },
-    {
-      "code": "TriesPerChunkScaleFactor",
-      "ingui": "Tries per chunk scale factor (EXPERIMENTAL)",
-      "type": "float",
-      "comment": "Originally, the game factors in the fact that not all ore discs are generated due to wrong chunk by scaling off rock factor, which is a local attribute. This is a global modifier to try and play off of that. Feedback is appreciated! /reprospect for old readings",
-      "default": 0.7,
-      "range": {
-        "min": 0.05,
-        "max": 1.0,
-        "step": 0.05
-      },
-      "weight": 4.0
-    },
-    {
-      "type": "separator",
-      "title": "Total Factor toggles. ( Low factor from other mods fixes )",
-      "weight": 6,
-      "collapsible": true
-    },
-    {
-      "code": "UpliftTraceOres",
-      "ingui": "Uplift ores to trace",
-      "type": "boolean",
-      "comment": "Readings only display values above 0.0025 factor. Turning this on will add all those even single-block ores as traces, whereas in base game they wouldn't be registered. I'd recommend against enabling.",
-      "default": false,
-      "weight": 6.1
-    },
-    {
-      "code": "UpliftToPoorNoGeneratorFound",
-      "ingui": "Uplift all unregistered generators ores to poor instead",
-      "type": "boolean",
-      "comment": "Only for ores that do not have a registered generator, i.e. Interesting Ore Gen. Requires the Uplift to trace enabled. This would make the PPT values visible, unlike traces. Can lead to erroneous exaggerations of very low counts of ore/gems but some mods without integration might require this.",
-      "default": true,
-      "weight": 6.2
-    },
-    {
-      "code": "UpliftAllToPoor",
-      "ingui": "Uplift all ores to poor instead",
-      "type": "boolean",
-      "comment": "Requires the Uplift to trace enabled. This would make the PPT values visible, unlike previously. Can lead to erroneous exaggerations of very low counts of ore/gems but some mods without integration might require this. Highly unrecommended. If enabled, also supercedes and automatically enables the previous setting. Usually the previous feature is enough.",
-      "default": false,
-      "weight": 6.3
+      "weight": 1.3
     },
     {
       "type": "separator",

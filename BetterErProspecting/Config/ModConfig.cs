@@ -4,7 +4,6 @@ public class ModConfig {
 	public static string ConfigName = "BetterErProspecting.json";
 	public static ModConfig Instance { get; set; } = new ModConfig();
 
-
 	public bool EnableDensityMode = true;
 	public bool OneShotDensity = false;
 
@@ -12,17 +11,13 @@ public class ModConfig {
 	public int NewDensityDmg = 3;
 
 	public bool LinearDensityScaling = true;
-	public float OreDetectionMultiplier = 1.0f;
-	public float OreCalculationDivider = 1.0f;
-	public float TriesPerChunkScaleFactor = 0.70f;
+	// Use standard chunk size for now
+	// public float OreDetectionMultiplier = 1.0f;
+	// public float OreCalculationDivider = 1.0f;
 
 	public bool AddProximityMode = true;
 	public int ProximitySearchRadius = 5;
 	public int ProximityDmg = 2;
-
-	public bool UpliftTraceOres = false;
-	public bool UpliftToPoorNoGeneratorFound = true;
-	public bool UpliftAllToPoor = false;
 
 	public bool AddStoneMode = true;
 	public bool StonePercentSearch = true;
