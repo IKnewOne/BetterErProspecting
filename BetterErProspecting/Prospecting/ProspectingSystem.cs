@@ -35,7 +35,6 @@ public class ProspectingSystem : ModSystem {
 	public override void StartServerSide(ICoreServerAPI api) {
 		base.StartServerSide(api);
 		sapi = api;
-
 		api.ChatCommands.GetOrCreate("btrpr")
 			.RequiresPrivilege(Privilege.controlserver)
 			.BeginSub("reprospect")
@@ -226,6 +225,8 @@ public class ProspectingSystem : ModSystem {
 		int mapHeight = world.BlockAccessor.GetTerrainMapheightAt(blockPos);
 		const int zoneDiameter = 2 * radius;
 		int zoneBlocks = zoneDiameter * zoneDiameter * mapHeight;
+		bool iogEnabled = false || !sapi.ModLoader.IsModEnabled("interestingoregen");
+
 
 		readings = new PropickReading
 		{
@@ -238,22 +239,30 @@ public class ProspectingSystem : ModSystem {
 				PartsPerThousand = (double)empiricalAmount / zoneBlocks * 1000
 			};
 
-			// This is basically vanilla logic
-			IBlockAccessor blockAccess = world.BlockAccessor;
-			int regsize = blockAccess.RegionSize;
-			IMapRegion reg = world.BlockAccessor.GetMapRegion(blockPos.X / regsize, blockPos.Z / regsize);
-			int lx = blockPos.X % regsize;
-			int lz = blockPos.Z % regsize;
-			IntDataMap2D map = reg.OreMaps[oreCode];
-			int noiseSize = map.InnerSize;
-			float posXInRegionOre = (float)lx / regsize * noiseSize;
-			float posZInRegionOre = (float)lz / regsize * noiseSize;
-			int oreDist = map.GetUnpaddedColorLerped(posXInRegionOre, posZInRegionOre);
-			int[] blockColumn = ppws.GetRockColumn(blockPos.X, blockPos.Z);
-			ppws.depositsByCode[oreCode].GeneratorInst.GetPropickReading(blockPos, oreDist, blockColumn, out _, out double imaginationLandFactor);
+			// Iog has a bug where it accidentally generates ore nodes when we run getrockcolumn.
+			// This means that if a person was using IOG + this mod and then uninstalls my mod, it makes every reading made with the mod enabled bad.
+			// Hopefully a temporary solution
+			if (iogEnabled) {
+				reading.TotalFactor = 0.5;
+			} else {
+				// This is basically vanilla logic
+				IBlockAccessor blockAccess = world.BlockAccessor;
+				int regsize = blockAccess.RegionSize;
+				IMapRegion reg = world.BlockAccessor.GetMapRegion(blockPos.X / regsize, blockPos.Z / regsize);
+				int lx = blockPos.X % regsize;
+				int lz = blockPos.Z % regsize;
+				IntDataMap2D map = reg.OreMaps[oreCode];
+				int noiseSize = map.InnerSize;
+				float posXInRegionOre = (float)lx / regsize * noiseSize;
+				float posZInRegionOre = (float)lz / regsize * noiseSize;
+				int oreDist = map.GetUnpaddedColorLerped(posXInRegionOre, posZInRegionOre);
+				int[] blockColumn = ppws.GetRockColumn(blockPos.X, blockPos.Z);
+				ppws.depositsByCode[oreCode].GeneratorInst.GetPropickReading(blockPos, oreDist, blockColumn, out _, out double imaginationLandFactor);
 
-			// 0.15 to allow ppt visibility. We will be overwriting this with the patch anyway
-			reading.TotalFactor = Math.Clamp(imaginationLandFactor, 0.15, 1.0);
+				// 0.15 to allow ppt visibility. We will be overwriting this with the patch anyway
+				reading.TotalFactor = Math.Clamp(imaginationLandFactor, 0.15, 1.0);
+			}
+
 			readings.OreReadings[oreCode] = reading;
 
 			var pptTracker = sapi.ModLoader.GetModSystem<Tracking.PptTracker>();

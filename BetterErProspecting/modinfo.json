@@ -18,7 +18,7 @@
     "PurplePi"
   ],
   "description": "A compilation of configurable ProPick features.",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "Side": "Universal",
   "dependencies": {
     "game": "1.21.1"
