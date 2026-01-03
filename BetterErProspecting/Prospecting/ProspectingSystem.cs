@@ -225,7 +225,7 @@ public class ProspectingSystem : ModSystem {
 		int mapHeight = world.BlockAccessor.GetTerrainMapheightAt(blockPos);
 		const int zoneDiameter = 2 * radius;
 		int zoneBlocks = zoneDiameter * zoneDiameter * mapHeight;
-		bool iogEnabled = false || !sapi.ModLoader.IsModEnabled("interestingoregen");
+		bool iogEnabled = false || sapi.ModLoader.IsModEnabled("interestingoregen");
 
 
 		readings = new PropickReading
