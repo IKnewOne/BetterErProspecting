@@ -15,6 +15,10 @@
       <HintPath>$(VSLIBS)\dlls\HydrateOrDiedrate.dll</HintPath>
 		<Private>false</Private>
     </Reference>
+    <Reference Include="InterestingOreGen">
+      <HintPath>..\..\VSLibs\dlls\InterestingOreGen.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="protobuf-net">
       <HintPath>$(VINTAGE_STORY)/Lib/protobuf-net.dll</HintPath>
       <Private>False</Private>

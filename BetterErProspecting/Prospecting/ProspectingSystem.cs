@@ -1,4 +1,5 @@
-﻿using Vintagestory.API.Common.CommandAbbr;
+﻿using InterestingOreGen;
+using Vintagestory.API.Common.CommandAbbr;
 
 namespace BetterErProspecting.Prospecting;
 
@@ -239,10 +240,7 @@ public class ProspectingSystem : ModSystem {
 				PartsPerThousand = (double)empiricalAmount / zoneBlocks * 1000
 			};
 
-			// Iog has a bug where it accidentally generates ore nodes when we run getrockcolumn.
-			// This means that if a person was using IOG + this mod and then uninstalls my mod, it makes every reading made with the mod enabled bad.
-			// Hopefully a temporary solution
-			if (iogEnabled) {
+			if (iogEnabled && IogFixNeeded(sapi)) {
 				reading.TotalFactor = 0.5;
 			} else {
 				// This is basically vanilla logic
@@ -297,6 +295,13 @@ public class ProspectingSystem : ModSystem {
 		}
 
 		delayedMessages.Add(new DelayedMessage(AquiferManager.GetAquiferDirectionHint(world, pos)));
+	}
+
+	private static bool IogFixNeeded(ICoreServerAPI sapi) {
+		IOGCore system = sapi.ModLoader.GetModSystem<IOGCore>();
+		// 2.2.0 should've fixed ghost ore
+		var minVer = new Version("2.2.0");
+		return new Version(system.Mod.Info.Version) >= minVer;
 	}
 
 	private static bool isHoDCompat(ICoreServerAPI sapi, List<DelayedMessage> delayedMessages) {

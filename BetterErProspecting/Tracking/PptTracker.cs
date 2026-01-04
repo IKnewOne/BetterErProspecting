@@ -106,6 +106,7 @@ public class PptTracker : ModSystem {
 		sapi.WorldManager.SaveGame.StoreData(SaveKey, SerializerUtil.Serialize(dataToSave, ms));
 
 		Mod.Logger.Debug($"[BetterErProspecting] Saved ppt data for {dataToSave.Count} ore codes");
+		oreData.Clear();
 	}
 
 	private void OnClientReceivedFullData(PptDataPacket packet) {
@@ -252,12 +253,5 @@ public class PptTracker : ModSystem {
 		}
 
 		Mod.Logger.Debug($"[BetterErProspecting] Backfilled from {readingCount} readings, processed {oreReadingCount} ore readings");
-	}
-
-
-
-	public override void Dispose() {
-		oreData.Clear();
-		base.Dispose();
 	}
 }
