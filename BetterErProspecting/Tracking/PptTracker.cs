@@ -46,9 +46,8 @@ public class PptTracker : ModSystem {
 			.RequiresPrivilege(Privilege.controlserver)
 			.BeginSub("oreData")
 				.RequiresPlayer()
-				.WithDesc("Dumps all ores data from memory and file storage and rewrites from all existing ore readings. Might want to reprospect first. May cause lags, recommended with as little players doing prospecting at a time as possible.")
-				.WithExamples("/btrpr oreData iAcceptLagfest")
-				.WithArgs(new StringArgParser("lagconfirm", isMandatoryArg: true))
+				.WithDesc("Dumps all ores data from memory and file storage and rewrites from all existing ore readings. Best to reprospect first. May cause lags.")
+				.WithExamples("/btrpr oreData")
 				.HandleWith(DumpAndReload)
 			.EndSub();
 
@@ -176,10 +175,6 @@ public class PptTracker : ModSystem {
 	}
 
 	private TextCommandResult DumpAndReload(TextCommandCallingArgs args) {
-		if ((string)args.Parsers[0].GetValue() != "iAcceptLagfest") {
-			return TextCommandResult.Error("You must confirm by providing the exact confirmation string.");
-		}
-
 		Mod.Logger.Notification($"[BetterErProspecting] Starting dump and reload of all ore readings data. Initiated by {args.Caller.Player.PlayerName}...");
 		oreData.Clear();
 
