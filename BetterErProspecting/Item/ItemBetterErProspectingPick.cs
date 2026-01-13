@@ -206,11 +206,22 @@ public sealed partial class ItemBetterErProspectingPick : ItemProspectingPick {
 			}
 		});
 
-		if (closestOre != -1) {
-			serverPlayer.SendMessage(GlobalConstants.InfoLogChatGroup, Lang.GetL(serverPlayer.LanguageCode, "bettererprospecting:closest-ore-is", closestOre), EnumChatType.Notification);
+		string messageKey;
+
+		if (!config.ProximityVagueDescriptors) {
+			messageKey = closestOre != -1
+				? "bettererprospecting:closest-ore-is"
+				: "bettererprospecting:closest-ore-not-found";
+			object[] messageArgs = closestOre != -1 ? [closestOre] : [radius];
+			serverPlayer.SendMessage(GlobalConstants.InfoLogChatGroup, Lang.GetL(serverPlayer.LanguageCode, messageKey, messageArgs), EnumChatType.Notification);
 		} else {
-			serverPlayer.SendMessage(GlobalConstants.InfoLogChatGroup, Lang.GetL(serverPlayer.LanguageCode, "bettererprospecting:closest-ore-not-found", radius), EnumChatType.Notification);
+			messageKey = closestOre != -1
+				? "bettererprospecting:promimity-vague-ore-nearby"
+				: "bettererprospecting:proximity-vague-ore-not-found";
+			serverPlayer.SendMessage(GlobalConstants.InfoLogChatGroup, Lang.GetL(serverPlayer.LanguageCode, messageKey), EnumChatType.Notification);
 		}
+
+
 	}
 
 	// Square radius-based search

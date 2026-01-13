@@ -1,5 +1,5 @@
 {
-  "version": 24,
+  "version": 26,
   "file": "BetterErProspecting.json",
   "settings": [
     {
@@ -10,33 +10,33 @@
     },
     {
       "code": "EnableDensityMode",
-      "ingui": "Enables density mode",
+      "ingui": "EnableDensityMode-setting",
       "type": "boolean",
-      "comment": "",
+      "comment": "EnableDensityMode-description",
       "default": true,
       "weight": 1.05
     },
     {
       "code": "OneShotDensity",
-      "ingui": "One Shot density mode",
+      "ingui": "OneShotDensity-setting",
       "type": "boolean",
-      "comment": "Has no impact if new density is enabled",
+      "comment": "OneShotDensity-description",
       "default": false,
       "weight": 1.07
     },
     {
       "code": "NewDensityMode",
-      "ingui": "Use new density mode",
+      "ingui": "NewDensityMode-setting",
       "type": "boolean",
-      "comment": "Replaces vanilla mode with the new density mode",
+      "comment": "NewDensityMode-description",
       "default": true,
       "weight": 1.1
     },
     {
       "code": "NewDensityDmg",
-      "ingui": "Tool damage for new density",
+      "ingui": "NewDensityDmg-setting",
       "type": "integer",
-      "comment": "",
+      "comment": "NewDensityDmg-description",
       "default": 3,
       "range": {
         "min": 1,
@@ -46,9 +46,9 @@
     },
     {
       "code": "LinearDensityScaling",
-      "ingui": "Linear density scaling",
+      "ingui": "LinearDensityScaling-setting",
       "type": "boolean",
-      "comment": "Makes vanilla propick readings scale linearly (0-1) instead of the default 0-0.75 range. This affects all propick readings, not just the new density mode. Works instantly. Always enabled for new density mode",
+      "comment": "LinearDensityScaling-description",
       "default": true,
       "weight": 1.3
     },
@@ -60,35 +60,43 @@
     },
     {
       "code": "AddProximityMode",
-      "ingui": "Enable Proximity Mode",
+      "ingui": "AddProximityMode-setting",
       "type": "boolean",
-      "comment": "Enables proximity mode. Looks for closest ore. Sphere-based",
+      "comment": "AddProximityMode-description",
       "default": true,
       "weight": 12.1
     },
     {
+      "code": "ProximityVagueDescriptors",
+      "ingui": "ProximityVagueDescriptors-setting",
+      "type": "boolean",
+      "comment": "ProximityVagueDescriptors-description",
+      "default": false,
+      "weight": 12.2
+    },
+    {
       "code": "ProximitySearchRadius",
-      "ingui": "Proximity mode search radius",
+      "ingui": "ProximitySearchRadius-setting",
       "type": "integer",
-      "comment": "I'd recommend low values to leave node mode useful (if enabled )",
+      "comment": "ProximitySearchRadius-description",
       "default": 5,
       "range": {
         "min": 1,
         "max": 10
       },
-      "weight": 12.2
+      "weight": 12.5
     },
     {
       "code": "ProximityDmg",
-      "ingui": "Proximity Damage",
+      "ingui": "ProximityDmg-setting",
       "type": "integer",
-      "comment": "Tool damage for proximity mode",
+      "comment": "ProximityDmg-description",
       "default": 2,
       "range": {
         "min": 1,
         "max": 10
       },
-      "weight": 12.3
+      "weight": 12.6
     },
     {
       "type": "separator",
@@ -98,33 +106,33 @@
     },
     {
       "code": "AddStoneMode",
-      "ingui": "Enable Stone Mode",
+      "ingui": "AddStoneMode-setting",
       "type": "boolean",
-      "comment": "Enable big range stone search mode with exact distance to block. Sphere-based",
+      "comment": "AddStoneMode-description",
       "default": true,
       "weight": 13.1
     },
     {
       "code": "StonePercentSearch",
-      "ingui": "Percentage Stone Search",
+      "ingui": "StonePercentSearch-setting",
       "type": "boolean",
-      "comment": "If enabled, stone mode displays percentage of found rocks relative to total found rocks. Immersion hurrah",
+      "comment": "StonePercentSearch-description",
       "default": true,
       "weight": 13.15
     },
     {
       "code": "StoneSearchRadius",
-      "ingui": "Stone search radius",
+      "ingui": "StoneSearchRadius-setting",
       "type": "integer",
-      "comment": "Stone mode search radius",
+      "comment": "StoneSearchRadius-description",
       "default": 64,
       "weight": 13.2
     },
     {
       "code": "StoneDmg",
-      "ingui": "Stone Damage",
+      "ingui": "StoneDmg-setting",
       "type": "integer",
-      "comment": "Tool damage for stone mode",
+      "comment": "StoneDmg-description",
       "default": 3,
       "range": {
         "min": 1,
@@ -140,17 +148,17 @@
     },
     {
       "code": "AddBoreHoleMode",
-      "ingui": "Enable Borehole Mode",
+      "ingui": "AddBoreHoleMode-setting",
       "type": "boolean",
-      "comment": "A straight-line mode. Only reports when breaking the top of the block, scans the world until the bottom and reports selected blocks ( Any or both of Ore and Stone blocks )",
+      "comment": "AddBoreHoleMode-description",
       "default": true,
       "weight": 14.1
     },
     {
       "code": "BoreholeDmg",
-      "ingui": "Borehole Damage",
+      "ingui": "BoreholeDmg-setting",
       "type": "integer",
-      "comment": "Tool damage for borehole mode",
+      "comment": "BoreholeDmg-description",
       "default": 4,
       "range": {
         "min": 1,
@@ -160,9 +168,9 @@
     },
     {
       "code": "BoreholeRadius",
-      "ingui": "Borehole Radius",
+      "ingui": "BoreholeRadius-setting",
       "type": "integer",
-      "comment": "Radius for borehole mode. 0 Makes a line",
+      "comment": "BoreholeRadius-description",
       "default": 8,
       "range": {
         "min": 0,
@@ -172,22 +180,22 @@
     },
     {
       "type": "separator",
-      "text": "At least one must be selected",
+      "text": "AtLeastOne",
       "weight": 14.3
     },
     {
       "code": "BoreholeScansOre",
-      "ingui": "Borehole Scans Ore",
+      "ingui": "BoreholeScansOre-setting",
       "type": "boolean",
-      "comment": "Allows borehole to scan ore",
+      "comment": "BoreholeScansOre-description",
       "default": true,
       "weight": 14.4
     },
     {
       "code": "BoreholeScansStone",
-      "ingui": "Borehole Scans Stone",
+      "ingui": "BoreholeScansStone-setting",
       "type": "boolean",
-      "comment": "Allows borehole to scan stone",
+      "comment": "BoreholeScansStone-description",
       "default": false,
       "weight": 14.5
     },
@@ -198,9 +206,9 @@
     },
     {
       "code": "DebugMode",
-      "ingui": "Enable Debug Mode",
+      "ingui": "DebugMode-setting",
       "type": "boolean",
-      "comment": "Enables in-game debug messages",
+      "comment": "DebugMode-description",
       "default": false,
       "weight": 100.0
     }

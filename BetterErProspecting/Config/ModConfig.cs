@@ -16,6 +16,7 @@ public class ModConfig {
 	// public float OreCalculationDivider = 1.0f;
 
 	public bool AddProximityMode = true;
+	public bool ProximityVagueDescriptors = false;
 	public int ProximitySearchRadius = 5;
 	public int ProximityDmg = 2;
 
