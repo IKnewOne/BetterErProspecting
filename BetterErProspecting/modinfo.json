@@ -9,16 +9,10 @@
     "NeoB",
     "qua8ion",
     "The_Revisionist",
-    "Gnomp",
-    "jeikobu__",
-    "NathanNgo",
-    "Shacklebottom",
-    "iturtleman",
-    "Voragain",
-    "PurplePi"
+    "ChimMAG"
   ],
   "description": "A compilation of configurable ProPick features.",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "Side": "Universal",
   "dependencies": {
     "game": "1.21.1"
