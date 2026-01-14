@@ -224,29 +224,40 @@ public class PptTracker : ModSystem {
 		Mod.Logger.Notification($"[BetterErProspecting] Backfilling {missingOreCodes.Count} missing ore codes: {string.Join(", ", missingOreCodes)}");
 
 
-		var oml = sapi.ModLoader?.GetModSystem<WorldMapManager>()?.MapLayers?.FirstOrDefault(ml => ml is OreMapLayer) as OreMapLayer;
-		if (oml == null) {
-			Mod.Logger.Warning("[BetterErProspecting] OreMapLayer not available for backfill");
-			return;
-		}
+		var allReadings = getAllPlayerReadings(sapi);
+		int readingCount = allReadings.Count;
 
-		int readingCount = 0;
-		int oreReadingCount = 0;
-
-		foreach (var player in sapi.World.AllPlayers) {
-			var readings = oml.getOrLoadReadings(player);
-			readingCount += readings.Count;
-
-			foreach (var reading in readings) {
-				foreach (var oreReading in reading.OreReadings) {
-					if (missingOreCodes.Contains(oreReading.Key)) {
-						UpdatePpt(oreReading.Key, oreReading.Value.PartsPerThousand);
-						oreReadingCount++;
-					}
+		foreach (var reading in allReadings) {
+			foreach (var oreReading in reading.OreReadings) {
+				if (missingOreCodes.Contains(oreReading.Key)) {
+					UpdatePpt(oreReading.Key, oreReading.Value.PartsPerThousand);
 				}
 			}
 		}
 
-		Mod.Logger.Debug($"[BetterErProspecting] Backfilled from {readingCount} readings, processed {oreReadingCount} ore readings");
+		Mod.Logger.Debug($"[BetterErProspecting] Backfilled from {readingCount} readings");
+	}
+
+	// Fills per-player data in oml as well as returns list of all readings
+	public static List<PropickReading> getAllPlayerReadings(ICoreServerAPI sapi) {
+		var result = new List<PropickReading>();
+		var oml = sapi.ModLoader?.GetModSystem<WorldMapManager>()?.MapLayers?.FirstOrDefault(ml => ml is OreMapLayer) as OreMapLayer;
+		if (oml == null) {
+			BetterErProspect.Logger.Warning("[BetterErProspecting] OreMapLayer not available for backfill");
+			return result;
+		}
+
+		foreach (var playerUid in sapi.PlayerData.PlayerDataByUid.Keys) {
+			result.AddRange(getOrLoadReadings(playerUid, oml, sapi));
+		}
+
+		return result;
+	}
+
+	public static List<PropickReading> getOrLoadReadings(string playeruid, OreMapLayer oml, ICoreServerAPI sapi) {
+		if (oml.PropickReadingsByPlayer.TryGetValue(playeruid, out var orLoadReadings))
+			return orLoadReadings;
+		byte[] data = sapi.WorldManager.SaveGame.GetData("oreMapMarkers-" + playeruid);
+		return data != null ? (oml.PropickReadingsByPlayer[playeruid] = SerializerUtil.Deserialize<List<PropickReading>>(data)) : (oml.PropickReadingsByPlayer[playeruid] = []);
 	}
 }

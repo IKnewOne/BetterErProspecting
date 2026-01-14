@@ -1,4 +1,5 @@
-﻿using InterestingOreGen;
+﻿using BetterErProspecting.Tracking;
+using InterestingOreGen;
 using Vintagestory.API.Common.CommandAbbr;
 
 namespace BetterErProspecting.Prospecting;
@@ -88,7 +89,6 @@ public class ProspectingSystem : ModSystem {
 				caller == null ? "console" : caller.PlayerName,
 				targetPlayer == null ? "all" : targetPlayer);
 
-			var world = sapi.World;
 			var oml = sapi.ModLoader.GetModSystem<WorldMapManager>().MapLayers.FirstOrDefault(ml => ml is OreMapLayer) as OreMapLayer;
 
 			if (oml == null) {
@@ -100,11 +100,12 @@ public class ProspectingSystem : ModSystem {
 			isReprospecting = true;
 			chunkLoadTasks.Clear(); // Reruns
 
-			// Inject offline players
-			var allPlayers = world.AllPlayers;
-			foreach (var player in allPlayers) { oml.getOrLoadReadings(player); }
 
+			var allReadings = PptTracker.getAllPlayerReadings(sapi);
+
+			// We could process all readings at the same time, but that might cause a lot of ram usage. Lets stick to oml per player ( huge cope )
 			foreach (var (_, readings) in oml.PropickReadingsByPlayer) {
+
 				// Step 1: Collect all unique chunks for this player's readings
 				var chunksToLoad = new HashSet<(int cx, int cz)>();
 				foreach (var reading in readings) {
@@ -138,7 +139,6 @@ public class ProspectingSystem : ModSystem {
 				}));
 
 				// Step 4: Replace readings safely
-				if (updatedReadings.Length <= 0) continue;
 				readings.Clear();
 				readings.AddRange(updatedReadings);
 			}
