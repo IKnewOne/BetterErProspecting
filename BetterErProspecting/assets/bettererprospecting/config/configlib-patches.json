@@ -109,7 +109,7 @@
       "ingui": "StoneSearchCreatesReadings-setting",
       "type": "boolean",
       "comment": "StoneSearchCreatesReadings-description",
-      "default": true,
+      "default": false,
       "weight": 13.13
     },
     {

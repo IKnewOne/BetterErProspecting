@@ -20,7 +20,7 @@ public class ModConfig {
 	public int ProximityDmg = 2;
 
 	public bool AddStoneMode = true;
-	public bool StoneSearchCreatesReadings = true;
+	public bool StoneSearchCreatesReadings = false;
 	public bool StonePercentSearch = true;
 	public int StoneSearchRadius = 64;
 	public int StoneDmg = 4;
