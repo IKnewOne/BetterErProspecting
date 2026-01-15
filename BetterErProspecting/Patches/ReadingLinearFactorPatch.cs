@@ -8,8 +8,8 @@ using Vintagestory.GameContent;
 namespace BetterErProspecting.Patches;
 
 [HarmonyPatch(typeof(PropickReading), "ToHumanReadable")]
-[HarmonyPatchCategory(nameof(BetterErProspect.PatchCategory.LinearDensity))]
-public class PropickReadingLinearFactorPatch {
+[HarmonyPatchCategory(nameof(BetterErProspect.PatchCategory.Always))]
+public class ReadingLinearFactorPatch {
 	static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
 		// We're looking for the pattern:
 		// oreReading2.TotalFactor * 7.5

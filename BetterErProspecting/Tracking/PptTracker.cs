@@ -28,7 +28,7 @@ public class PptData {
 }
 
 public class PptTracker : ModSystem {
-	private readonly ConcurrentDictionary<string, PptData> oreData = new();
+	public readonly ConcurrentDictionary<string, PptData> oreData = new();
 	private const string SaveKey = "betterErProspectingPptData";
 	private const string ChannelName = "bettererprospecting_ppt";
 
@@ -82,6 +82,7 @@ public class PptTracker : ModSystem {
 				oreData[kvp.Key] = kvp.Value;
 			}
 			Mod.Logger.Debug($"[BetterErProspecting] Loaded ppt data for {loaded.Count} ore codes from save");
+			sapi.Event.ServerRunPhase(EnumServerRunPhase.RunGame, InsertMissingOreCodes);
 		} else {
 			// Absolute cold start. Lets normalize all readings
 			sapi.ModLoader.GetModSystem<ProspectingSystem>().ReprospectTask(null, null).Wait();
@@ -116,13 +117,6 @@ public class PptTracker : ModSystem {
 		Mod.Logger.Debug($"[BetterErProspecting] Client received ppt data for {packet.AllData.Count} ore codes");
 	}
 
-	private void OnClientReceivedUpdate(PptDataUpdatePacket packet) {
-		if (packet == null || string.IsNullOrEmpty(packet.OreCode) || packet.Data == null)
-			return;
-
-		oreData[packet.OreCode] = packet.Data;
-		Mod.Logger.Debug($"[BetterErProspecting] Client received ppt data update for {packet.OreCode}");
-	}
 
 	private void OnPlayerJoin(IServerPlayer byPlayer) {
 		if (oreData.IsEmpty)
@@ -151,12 +145,16 @@ public class PptTracker : ModSystem {
 		serverChannel.BroadcastPacket(packet);
 	}
 
-	public void AdjustReadingFactor(OreReading reading) {
-		reading.TotalFactor = GetAdjustedFactor(reading);
+	private void OnClientReceivedUpdate(PptDataUpdatePacket packet) {
+		if (packet == null || string.IsNullOrEmpty(packet.OreCode) || packet.Data == null)
+			return;
+
+		oreData[packet.OreCode] = packet.Data;
+		Mod.Logger.Debug($"[BetterErProspecting] Client received ppt data update for {packet.OreCode}");
 	}
 
 	public double GetAdjustedFactor(OreReading reading) {
-		if (reading?.DepositCode == null) {
+		if (reading?.DepositCode == null || reading.DepositCode.StartsWith("rock-") || !oreData.ContainsKey(reading.DepositCode)) {
 			return reading?.TotalFactor ?? 0.0;
 		}
 
@@ -179,7 +177,7 @@ public class PptTracker : ModSystem {
 			sapi.WorldManager.SaveGame.StoreData(SaveKey, SerializerUtil.Serialize(emptyDict, ms));
 		}
 
-		BackfillMissingOreCodes();
+		FillOreDataFromReadings();
 
 		Mod.Logger.Notification($"[BetterErProspecting] Dump and reload complete. Tracked {oreData.Count} ore codes.");
 		return TextCommandResult.Success($"Successfully reloaded ore readings data. Now tracking {oreData.Count} ore codes.");
@@ -194,7 +192,7 @@ public class PptTracker : ModSystem {
 			var ppws = ObjectCacheUtil.TryGet<ProPickWorkSpace>(sapi, "propickworkspace");
 			if (ppws?.pageCodes is { Count: > 0 }) {
 				Mod.Logger.Debug($"[BetterErProspecting] ProPickWorkSpace pageCodes ready with {ppws.pageCodes.Count} entries, starting backfill");
-				BackfillMissingOreCodes();
+				FillOreDataFromReadings();
 			} else if (attemptCount < maxAttempts) {
 				Mod.Logger.Debug($"[BetterErProspecting] ProPickWorkSpace pageCodes not ready, retrying in {delayMs}ms (attempt {attemptCount + 1}/{maxAttempts})");
 				ScheduleBackfillWhenReady(attemptCount + 1);
@@ -204,31 +202,44 @@ public class PptTracker : ModSystem {
 		}, delayMs);
 	}
 
-	private void BackfillMissingOreCodes() {
+	private void InsertMissingOreCodes() {
 		var ppws = ObjectCacheUtil.TryGet<ProPickWorkSpace>(sapi, "propickworkspace");
-		if (ppws?.pageCodes == null) {
-			Mod.Logger.Error("[BetterErProspecting] ProPickWorkSpace not available, couldn't perform backfill");
-			return;
-		}
 
 		var missingOreCodes = new HashSet<string>();
 		foreach (var oreCode in ppws.pageCodes.Keys.Where(oreCode => !oreData.ContainsKey(oreCode))) {
 			missingOreCodes.Add(oreCode);
 		}
 
-		if (missingOreCodes.Count <= 0) return;
-		Mod.Logger.Notification($"[BetterErProspecting] Backfilling {missingOreCodes.Count} missing ore codes: {string.Join(", ", missingOreCodes)}");
+		foreach (var oreCode in missingOreCodes) {
+			var data = oreData.GetOrAdd(oreCode, _ => new PptData());
+			SendUpdateToClients(oreCode, data);
+		}
+	}
 
+	private void FillOreDataFromReadings() {
+		var ppws = ObjectCacheUtil.TryGet<ProPickWorkSpace>(sapi, "propickworkspace");
+		if (ppws?.pageCodes == null) {
+			Mod.Logger.Error("[BetterErProspecting] ProPickWorkSpace not available, couldn't perform backfill");
+			return;
+		}
+
+		InsertMissingOreCodes();
+		Mod.Logger.Notification($"[BetterErProspecting] Backfilling {ppws.pageCodes.Keys.Count} ore codes: {string.Join(", ", ppws.pageCodes.Keys)}");
 
 		var allReadings = getAllPlayerReadings(sapi);
 		int readingCount = allReadings.Count;
 
+		// Update from each reading server-side
 		foreach (var reading in allReadings) {
 			foreach (var oreReading in reading.OreReadings) {
-				if (missingOreCodes.Contains(oreReading.Key)) {
-					UpdatePpt(oreReading.Key, oreReading.Value.PartsPerThousand);
-				}
+				var data = oreData.GetOrAdd(oreReading.Key, _ => new PptData());
+				data.Update(oreReading.Value.PartsPerThousand);
 			}
+		}
+
+		// Only send once per ore code
+		foreach (var data in oreData) {
+			SendUpdateToClients(data.Key, data.Value);
 		}
 
 		Mod.Logger.Debug($"[BetterErProspecting] Backfilled from {readingCount} readings");

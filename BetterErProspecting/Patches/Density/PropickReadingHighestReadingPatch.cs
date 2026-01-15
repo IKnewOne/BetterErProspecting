@@ -8,7 +8,7 @@ using Vintagestory.GameContent;
 namespace BetterErProspecting.Patches;
 
 [HarmonyPatch(typeof(PropickReading), "HighestReading", MethodType.Getter)]
-[HarmonyPatchCategory(nameof(BetterErProspect.PatchCategory.PptTracking))]
+[HarmonyPatchCategory(nameof(BetterErProspect.PatchCategory.NewDensity))]
 public class PropickReadingHighestReadingPatch {
 	static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
 		// We're looking for the pattern:
@@ -52,14 +52,9 @@ public class PropickReadingHighestReadingPatch {
 	}
 
 	private static double GetAdjustedFactorFromKvp(KeyValuePair<string, OreReading> kvp) {
-		if (BetterErProspect.Api == null || kvp.Value == null)
-			return kvp.Value?.TotalFactor ?? 0.0;
 		kvp.Value.DepositCode = kvp.Key;
 
 		var pptTracker = BetterErProspect.Api.ModLoader.GetModSystem<PptTracker>();
-		if (pptTracker == null)
-			return kvp.Value.TotalFactor;
-
 		return pptTracker.GetAdjustedFactor(kvp.Value);
 	}
 }

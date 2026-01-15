@@ -239,8 +239,7 @@ public sealed partial class ItemBetterErProspectingPick : ItemProspectingPick {
 
 		sb.AppendLine(Lang.GetL(serverPlayer.LanguageCode, "bettererprospecting:area-sample", walkRadius));
 
-		// Int is either distance or count
-		Dictionary<string, int> rockInfo = new Dictionary<string, int>();
+		Dictionary<string, (int Distance, int Count)> rockInfo = new();
 
 		BlockPos blockPos = blockSel.Position.Copy();
 		var blockEnd = blockPos.AddCopy(-walkRadius, 0, -walkRadius);
@@ -248,54 +247,65 @@ public sealed partial class ItemBetterErProspectingPick : ItemProspectingPick {
 		var cache = new Dictionary<string, string>();
 		api.World.BlockAccessor.WalkBlocks(blockPos.AddCopy(walkRadius, walkRadius, walkRadius), blockEnd,
 			(walkBlock, x, y, z) => {
-				// ReSharper disable once InvertIf
-				if (IsRock(walkBlock, cache, out string key)) {
-					if (config.StonePercentSearch) {
-						int count = rockInfo.GetValueOrDefault(key, 0);
-						rockInfo[key] = ++count;
-					} else {
-						int distance = (int)blockSel.Position.DistanceTo(new BlockPos(x, y, z));
-						// ReSharper disable once InvertIf
-						if (!rockInfo.TryGetValue(key, out int value) || distance < value) {
-                            value = distance;
-                            rockInfo[key] = value;
-						}
-					}
 
+				if (IsRock(walkBlock, cache, out string key)) {
+					int distance = (int)blockSel.Position.DistanceTo(new BlockPos(x, y, z));
+
+					if (rockInfo.TryGetValue(key, out var existing)) {
+						rockInfo[key] = (Math.Min(existing.Distance, distance), existing.Count + 1);
+					} else {
+						rockInfo[key] = (distance, 1);
+					}
 				}
 
 			});
+
 
 		if (rockInfo.Count == 0) {
 			serverPlayer.SendMessage(GlobalConstants.InfoLogChatGroup, Lang.GetL(serverPlayer.LanguageCode, "bettererprospecting:no-rocks-near"), EnumChatType.Notification);
 			return;
 		}
 
+		rockInfo.Remove("rock-meteorite-iron");
+		rockInfo.Remove("rock-suevite");
+
 		sb.AppendLine(Lang.GetL(serverPlayer.LanguageCode, "bettererprospecting:found-rocks"));
 
+		int totalRocks = rockInfo.Values.Sum(v => v.Count);
 
-		int totalRocks = rockInfo.Values.Sum();
-		List<KeyValuePair<string, int>> output;
+		var output = config.StonePercentSearch
+			? rockInfo.OrderByDescending(kvp => kvp.Value.Count).ToList()
+			: rockInfo.OrderBy(kvp => kvp.Value.Distance).ToList();
 
-		if (config.StonePercentSearch) {
-			output = rockInfo.OrderByDescending(kvp => kvp.Value).ToList();
-		} else {
-			output = rockInfo.OrderBy(kvp => kvp.Value).ToList();
-		}
+		PropickReading propickReading = new PropickReading();
+		propickReading.Position = blockPos.ToVec3d();
 
+		foreach (var (key, (distance, count)) in output) {
+			var rockReading = new OreReading();
+			rockReading.DepositCode = key; // should be rock-{andesite|granite|etc}
 
-		foreach ((string key, int amount) in output) {
+			double percent = (double)count / totalRocks; // 0-1
+			double percentScaled = Math.Max(percent * 100.0, 0.01); // 0.01-100
+
+			// totalfactor is used by ToHumanReadable for sorting, but for display we will use PPT, which holds 0-100 percentage
+			rockReading.TotalFactor = Math.Max(percent, 0.026);
+			rockReading.PartsPerThousand = percentScaled; // will use a percentage instead
+
+			propickReading.OreReadings[key] = rockReading;
+
 			string itemLink = getHandbookLinkOrName(world, serverPlayer, key);
 
 			if (config.StonePercentSearch) {
-				double percent = amount * 100.0 / totalRocks;
-				percent = percent > 0.01 ? percent : 0.01;
-				sb.AppendLine(Lang.GetL(serverPlayer.LanguageCode, $"{itemLink}: {percent:0.##} %"));
+				sb.AppendLine(Lang.GetL(serverPlayer.LanguageCode, $"{itemLink}: {percentScaled:0.##} %"));
 			} else {
-				sb.AppendLine(Lang.GetL(serverPlayer.LanguageCode, "bettererprospecting:stone-mode-blocks-away", itemLink, amount));
+				sb.AppendLine(Lang.GetL(serverPlayer.LanguageCode, "bettererprospecting:stone-mode-blocks-away", itemLink, distance));
 			}
-
 		}
+
+		if (config.StoneSearchCreatesReadings) {
+			world.Api.ModLoader.GetModSystem<ModSystemOreMap>()?.DidProbe(propickReading, serverPlayer);
+		}
+
 		serverPlayer.SendMessage(GlobalConstants.InfoLogChatGroup, sb.ToString(), EnumChatType.Notification);
 	}
 

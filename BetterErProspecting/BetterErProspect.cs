@@ -12,6 +12,7 @@ namespace BetterErProspecting;
 public class BetterErProspect : ModSystem {
 	public static ILogger Logger { get; private set; }
 	public static ICoreAPI Api { get; private set; }
+	public static ModConfig Config => ModConfig.Instance;
 	private static Harmony harmony { get; set; }
 
 	public static event Action ReloadTools;
@@ -71,21 +72,22 @@ public class BetterErProspect : ModSystem {
 	}
 
 	private void PatchUnpatch() {
-		harmony?.UnpatchAll(Mod.Info.ModID);
+		harmony.UnpatchAll(Mod.Info.ModID);
+		harmony.PatchCategory(nameof(PatchCategory.Always));
 
 		if (ModConfig.Instance.NewDensityMode) {
-			// Force linear for new mode because it calculates that linearly anyway
-			harmony?.PatchCategory(nameof(PatchCategory.PptTracking));
+			harmony.PatchCategory(nameof(PatchCategory.NewDensity));
 		}
 
-		if (ModConfig.Instance.LinearDensityScaling || ModConfig.Instance.NewDensityMode) {
-			harmony?.PatchCategory(nameof(PatchCategory.LinearDensity));
+		if (ModConfig.Instance.StoneSearchCreatesReadings) {
+			harmony.PatchCategory(nameof(PatchCategory.StoneReadings));
 		}
 	}
 
 	public enum PatchCategory {
-		LinearDensity,
-		PptTracking
+		Always,
+		NewDensity,
+		StoneReadings
 	}
 }
 

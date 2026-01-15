@@ -33,6 +33,11 @@
   "DebugMode": "DebugMode",
   "AtLeastOne": "At least one must be selected",
 
+  "_comment1": "Rock > R, as opposed to ore O",
+  "R": "R",
+  "worldmap-ores-only": "All Ores",
+  "worldmap-rocks-only": "All Rocks",
+
   "EnableDensityMode-setting": "Enables density mode",
   "EnableDensityMode-description": "",
   "OneShotDensity-setting": "One Shot density mode",
@@ -41,8 +46,6 @@
   "NewDensityMode-description": "Replaces vanilla mode with the new density mode",
   "NewDensityDmg-setting": "New Density Tool Damage",
   "NewDensityDmg-description": "Tool damage for new density mode",
-  "LinearDensityScaling-setting": "Linear density scaling",
-  "LinearDensityScaling-description": "Makes vanilla propick readings scale linearly (0-1) instead of the default 0-0.75 range. This affects all propick readings, not just the new density mode. Works instantly. Always enabled for new density mode",
 
   "AddProximityMode-setting": "Enable Proximity Mode",
   "AddProximityMode-description": "Enables proximity mode. Looks for closest ore. Sphere-based",
@@ -55,6 +58,8 @@
 
   "AddStoneMode-setting": "Enable Stone Mode",
   "AddStoneMode-description": "Enable big range stone search mode with exact distance to block. Sphere-based",
+  "StoneSearchCreatesReadings-setting": "Stone Mode Readings",
+  "StoneSearchCreatesReadings-description": "Creates readings when using stone mode. Always shows percentage instead regardless of percent setting",
   "StonePercentSearch-setting": "Percentage Stone Search",
   "StoneSearchRadius-setting": "Stone search radius",
   "StonePercentSearch-description": "If enabled, stone mode displays percentage of found rocks relative to total found rocks. Immersion hurrah",

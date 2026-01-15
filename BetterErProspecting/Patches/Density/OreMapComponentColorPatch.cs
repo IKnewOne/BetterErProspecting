@@ -7,7 +7,7 @@ using Vintagestory.GameContent;
 namespace BetterErProspecting.Patches;
 
 [HarmonyPatch(typeof(OreMapComponent), MethodType.Constructor, typeof(int), typeof(PropickReading), typeof(OreMapLayer), typeof(Vintagestory.API.Client.ICoreClientAPI), typeof(string))]
-[HarmonyPatchCategory(nameof(BetterErProspect.PatchCategory.PptTracking))]
+[HarmonyPatchCategory(nameof(BetterErProspect.PatchCategory.NewDensity))]
 public class OreMapComponentColorPatch {
 	static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
 		// We're looking for the pattern:
@@ -42,13 +42,7 @@ public class OreMapComponentColorPatch {
 	}
 
 	private static double GetAdjustedFactorFromReading(OreReading reading) {
-		if (BetterErProspect.Api == null || reading == null)
-			return reading?.TotalFactor ?? 0.0;
-
 		var pptTracker = BetterErProspect.Api.ModLoader.GetModSystem<PptTracker>();
-		if (pptTracker == null)
-			return reading.TotalFactor;
-
-		return pptTracker.GetAdjustedFactor(reading);
+		return pptTracker?.GetAdjustedFactor(reading) ?? reading.TotalFactor;
 	}
 }

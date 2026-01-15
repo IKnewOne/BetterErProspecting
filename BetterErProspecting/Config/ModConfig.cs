@@ -10,7 +10,6 @@ public class ModConfig {
 	public bool NewDensityMode = true;
 	public int NewDensityDmg = 3;
 
-	public bool LinearDensityScaling = true;
 	// Use standard chunk size for now
 	// public float OreDetectionMultiplier = 1.0f;
 	// public float OreCalculationDivider = 1.0f;
@@ -21,6 +20,7 @@ public class ModConfig {
 	public int ProximityDmg = 2;
 
 	public bool AddStoneMode = true;
+	public bool StoneSearchCreatesReadings = true;
 	public bool StonePercentSearch = true;
 	public int StoneSearchRadius = 64;
 	public int StoneDmg = 4;

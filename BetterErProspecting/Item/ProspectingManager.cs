@@ -74,7 +74,11 @@ public partial class ItemBetterErProspectingPick {
 	}
 
 	public static string getHandbookLinkOrName(IWorldAccessor world, IServerPlayer serverPlayer, string key, string itemName = null, string handbookUrl = null) {
-		itemName ??= Lang.GetL(serverPlayer.LanguageCode, key);
+		return getHandbookLinkOrName(world, serverPlayer.LanguageCode, key, itemName, handbookUrl);
+	}
+
+	public static string getHandbookLinkOrName(IWorldAccessor world, string languageCode, string key, string itemName = null, string handbookUrl = null) {
+		itemName ??= Lang.GetL(languageCode, key);
 		if (handbookUrl != null) return $"<a href=\"handbook://{handbookUrl}\">{itemName}</a>";
 
 		if (world.GetBlock(key) is { } block) {

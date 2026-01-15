@@ -41,8 +41,6 @@
   "NewDensityMode-description": "Reemplaza el modo vanilla con el nuevo modo densidad",
   "NewDensityDmg-setting": "Daño de herramienta del nuevo modo densidad",
   "NewDensityDmg-description": "Daño de herramienta para el nuevo modo densidad",
-  "LinearDensityScaling-setting": "Escalado lineal de densidad",
-  "LinearDensityScaling-description": "Hace que las lecturas del propick vanilla escalen linealmente (0-1) en lugar del rango predeterminado 0-0.75. Esto afecta todas las lecturas del propick, no solo el nuevo modo densidad. Funciona instantáneamente. Siempre activado para el nuevo modo densidad",
 
   "AddProximityMode-setting": "Activar Modo Proximidad",
   "AddProximityMode-description": "Activa el modo proximidad. Busca el mineral más cercano. Basado en esfera",
