@@ -85,13 +85,9 @@ public class PptTracker : ModSystem {
 		} else {
 			// Absolute cold start. Lets normalize all readings
 			sapi.ModLoader.GetModSystem<ProspectingSystem>().ReprospectTask(null, null).Wait();
+			// We need the page codes and ppws delays to async RunGame phase action
+			sapi.Event.ServerRunPhase(EnumServerRunPhase.RunGame, () => { ScheduleBackfillWhenReady(); });
 		}
-
-		// We need the page codes and ppws delays to async RunGame phase action
-		sapi.Event.ServerRunPhase(EnumServerRunPhase.RunGame, () =>
-		{
-			ScheduleBackfillWhenReady();
-		});
 	}
 
 	private void OnSaveGameGettingSaved() {

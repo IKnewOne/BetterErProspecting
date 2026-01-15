@@ -12,7 +12,7 @@
     "ChimMAG"
   ],
   "description": "A compilation of configurable ProPick features.",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "Side": "Universal",
   "dependencies": {
     "game": "1.21.1"
