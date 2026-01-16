@@ -28,7 +28,7 @@ public class PptData {
 }
 
 public class PptTracker : ModSystem {
-	public readonly ConcurrentDictionary<string, PptData> oreData = new();
+	public static readonly ConcurrentDictionary<string, PptData> oreData = new();
 	private const string SaveKey = "betterErProspectingPptData";
 	private const string ChannelName = "bettererprospecting_ppt";
 
@@ -153,6 +153,31 @@ public class PptTracker : ModSystem {
 		Mod.Logger.Debug($"[BetterErProspecting] Client received ppt data update for {packet.OreCode}");
 	}
 
+	public void AdjustFactor(PropickReading readings) {
+		foreach (var reading in readings.OreReadings) {
+			reading.Value.DepositCode = reading.Key;
+			AdjustFactor(reading.Value);
+		}
+	}
+
+	public void AdjustFactor(Dictionary<string, OreReading> OreReadings) {
+		foreach (var reading in OreReadings) {
+			reading.Value.DepositCode = reading.Key;
+			AdjustFactor(reading.Value);
+		}
+	}
+
+	public void AdjustFactor(List<PropickReading> readings) {
+		foreach (var reading in readings) {
+			AdjustFactor(reading);
+		}
+	}
+
+
+	public void AdjustFactor(OreReading reading) {
+		reading.TotalFactor = GetAdjustedFactor(reading);
+	}
+
 	public double GetAdjustedFactor(OreReading reading) {
 		if (reading?.DepositCode == null || reading.DepositCode.StartsWith("rock-") || !oreData.ContainsKey(reading.DepositCode)) {
 			return reading?.TotalFactor ?? 0.0;
@@ -164,8 +189,8 @@ public class PptTracker : ModSystem {
 		}
 
 		double normalizedValue = (reading.PartsPerThousand - data.MinPpt) / (data.MaxPpt - data.MinPpt);
-		double adjustedFactor = 0.15 + (normalizedValue * 0.85);
-		return Math.Clamp(adjustedFactor, 0.15, 1.0);
+		double adjustedFactor = 0.04 + (normalizedValue * 0.96);
+		return Math.Clamp(adjustedFactor, 0.04, 1.0);
 	}
 
 	private TextCommandResult DumpAndReload(TextCommandCallingArgs args) {

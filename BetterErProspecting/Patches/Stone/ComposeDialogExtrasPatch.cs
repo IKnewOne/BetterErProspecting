@@ -9,9 +9,12 @@ using Vintagestory.GameContent;
 
 namespace BetterErProspecting.Patches.Stone;
 
+// Always because we need to handle previously created stone readings. Otherwise they will have ore-rock-{} format and not have a proper dropdown option
+// Adds dropdowns for ore and rock group/ per rock specific dropdowns
+// Sorts readings by locale name
+// Filters out rock readings from WPs if not enabled
 [HarmonyPatch(typeof(OreMapLayer), nameof(OreMapLayer.ComposeDialogExtras))]
 [HarmonyPatchCategory(nameof(BetterErProspect.PatchCategory.Always))]
-// Always because we need to handle previously created stone readings. Otherwise they will have ore-rock-{} format and not have a proper dropdown option
 public class ComposeDialogExtrasPatch {
     static bool Prefix(OreMapLayer __instance, GuiDialogWorldMap guiDialogWorldMap, GuiComposer compo) {
         var stoneReadingsEnabled = BetterErProspect.Config.StoneSearchCreatesReadings;

@@ -13,11 +13,6 @@ public class ReadingToHumanReadableOreAdjustFactor {
 			return;
 
 		var pptTracker = BetterErProspect.Api.ModLoader.GetModSystem<PptTracker>();
-		foreach (var (oreCode, reading) in __instance.OreReadings) {
-			if (reading == null)
-				continue;
-			reading.DepositCode = oreCode;
-			reading.TotalFactor = pptTracker.GetAdjustedFactor(reading);
-		}
+		pptTracker.AdjustFactor(__instance.OreReadings);
 	}
 }

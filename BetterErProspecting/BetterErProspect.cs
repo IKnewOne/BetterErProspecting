@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using BetterErProspecting.Config;
 using BetterErProspecting.Item;
 using ConfigLib;
 using HarmonyLib;
 using Vintagestory.API.Common;
+using Vintagestory.GameContent;
 
 namespace BetterErProspecting;
 
@@ -82,12 +84,33 @@ public class BetterErProspect : ModSystem {
 		if (ModConfig.Instance.StoneSearchCreatesReadings) {
 			harmony.PatchCategory(nameof(PatchCategory.StoneReadings));
 		}
+
+		if (Api.ModLoader.IsModEnabled("prospecttogether")) {
+			UnpatchProspectTogether();
+			harmony.PatchCategory(nameof(PatchCategory.ProspectTogetherCompat));
+		}
+	}
+
+	// Maybe some better place ?
+	private void UnpatchProspectTogether() {
+		var original = AccessTools.Method(typeof(OreMapLayer), nameof(OreMapLayer.OnDataFromServer));
+		var ptAssembly = AppDomain.CurrentDomain.GetAssemblies()
+			.FirstOrDefault(a => a.GetName().Name == "ProspectTogether");
+		if (ptAssembly == null)
+			return;
+
+		var patchType = ptAssembly.GetType("ProspectTogether.Client.OreMapLayerPatch");
+		var theirPrefix = patchType?.GetMethod("OnDataFromServer", BindingFlags.Static | BindingFlags.NonPublic);
+		if (theirPrefix != null) {
+			harmony.Unpatch(original, theirPrefix);
+		}
 	}
 
 	public enum PatchCategory {
 		Always,
 		NewDensity,
-		StoneReadings
+		StoneReadings,
+		ProspectTogetherCompat
 	}
 }
 
