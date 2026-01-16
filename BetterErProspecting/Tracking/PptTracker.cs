@@ -164,8 +164,8 @@ public class PptTracker : ModSystem {
 		}
 
 		double normalizedValue = (reading.PartsPerThousand - data.MinPpt) / (data.MaxPpt - data.MinPpt);
-		double adjustedFactor = 0.15 + (normalizedValue * 0.85);
-		return Math.Clamp(adjustedFactor, 0.15, 1.0);
+		double adjustedFactor = 0.04 + (normalizedValue * 0.96);
+		return Math.Clamp(adjustedFactor, 0.04, 1.0);
 	}
 
 	private TextCommandResult DumpAndReload(TextCommandCallingArgs args) {
