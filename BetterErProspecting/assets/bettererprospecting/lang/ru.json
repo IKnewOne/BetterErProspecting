@@ -8,7 +8,7 @@
   "promimity-vague-ore-nearby": "Поблизости обнаружена руда",
   "proximity-vague-ore-not-found": "Поблизости руда не найдена",
 
-  "borehole": "Режим бурения (поиск по вертикальному цилиндру с заданным радиусом)",
+  "borehole": "Режим скважины (поиск по вертикальному цилиндру с заданным радиусом)",
   "borehole-no-filter": "Бурение не настроено на поиск ни одного из типов",
   "borehole-sample-upside": "Образцы бурения можно брать только с верхней стороны блока",
   "borehole-sample-taken": "Образец бурения получен.",
@@ -33,6 +33,11 @@
   "DebugMode": "Режим отладки",
   "AtLeastOne": "Должен быть выбран хотя бы один",
 
+  "_comment1": "Горная порода > Камень > К, в отличие от руды Р",
+  "R": "К",
+  "worldmap-ores-only": "Все руды",
+  "worldmap-rocks-only": "Все каменные породы",
+
   "EnableDensityMode-setting": "Включает режим плотности",
   "EnableDensityMode-description": "",
   "OneShotDensity-setting": "Режим плотности за один замер",
@@ -47,12 +52,14 @@
   "ProximitySearchRadius-setting": "Радиус ближнего поиска",
   "ProximitySearchRadius-description": "Я бы порекомендовал использовать низкие значения, чтобы оставить этот режим поиска узла полезным (если он включен).",
   "ProximityVagueDescriptors-setting": "Расплывчатые описания близости руды",
-  "ProximityVagueDescriptors-description": "Записывает сообщения «да/нет» при использовании разведки ближнего поиска вместо точного количества блоков к ближайшей руде",
+  "ProximityVagueDescriptors-description": "Записывает сообщения «(не-)найдено» при использовании разведки ближнего поиска вместо точного количества блоков к ближайшей руде",
   "ProximityDmg-setting": "Износ при ближнем поиске",
   "ProximityDmg-description": "Повреждение инструмента в режиме ближнего поиска",
 
   "AddStoneMode-setting": "Включить поиск каменных пород",
   "AddStoneMode-description": "Включите режим поиска каменных пород с большим диапазоном с точным расстоянием для блокировки, поиск по радиусу сферы",
+  "StoneSearchCreatesReadings-setting": "Показания режима поиска пород",
+  "StoneSearchCreatesReadings-description": "Создаёт показания при использовании режима поиска каменных пород. Всегда отображает проценты, независимо от настроек",
   "StonePercentSearch-setting": "Поиск по камней в процентах",
   "StoneSearchRadius-setting": "Радиус поиска камней",
   "StonePercentSearch-description": "Если включен, режим отображает процент найденных каменных пород по отношению к общему количеству найденных пород.",
@@ -60,16 +67,16 @@
   "StoneDmg-setting": "Износ при поиске камней",
   "StoneDmg-description": "Повреждение инструмента для режима поиска каменных пород",
 
-  "AddBoreHoleMode-setting": "Включить режим бурения",
+  "AddBoreHoleMode-setting": "Включить режим скважины",
   "AddBoreHoleMode-description": "Линейный режим. Сообщает только при разрушении верхней части блока, сканирует мир до низа и сообщает о выбранных блоках (любых или обоих из руды и каменных блоков).",
-  "BoreholeDmg-setting": "Износ в режиме бурения",
-  "BoreholeDmg-description": "Повреждение инструмента в режиме бурения",
-  "BoreholeRadius-setting": "Радиус поиска в режиме бурения",
+  "BoreholeDmg-setting": "Износ в режиме скважины",
+  "BoreholeDmg-description": "Повреждение инструмента в режиме скважины",
+  "BoreholeRadius-setting": "Радиус скважины",
   "BoreholeRadius-description": "Радиус для режима скважины. 0 Образует линию",
   "BoreholeScansOre-setting": "Сканирование руды бурением",
   "BoreholeScansOre-description": "Позволяет при бурении сканировать руду",
   "BoreholeScansStone-setting": "Сканирование камня бурением",
-  "BoreholeScansStone-description": "Позволяет скважине сканировать камень",
+  "BoreholeScansStone-description": "Позволяет при бурении сканировать камень",
 
   "DebugMode-setting": "Включить режим отладки",
   "DebugMode-description": "Включение внутриигровых отладочных сообщений"

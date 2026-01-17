@@ -52,7 +52,7 @@
   "ProximitySearchRadius-setting": "Proximity mode search radius",
   "ProximitySearchRadius-description": "I'd recommend low values to leave node mode useful (if enabled )",
   "ProximityVagueDescriptors-setting": "Vague Proximity descriptions",
-  "ProximityVagueDescriptors-description": "Writes yes/no messages when using proximity prospecting instead of exact block count to nearest ore",
+  "ProximityVagueDescriptors-description": "Writes exists/not found messages when using proximity prospecting instead of exact block count to nearest ore",
   "ProximityDmg-setting": "Proximity Damage",
   "ProximityDmg-description": "Tool damage for proximity mode",
 
