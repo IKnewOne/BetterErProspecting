@@ -21,9 +21,13 @@ public class PptData {
 	[ProtoMember(2)]
 	public double MaxPpt = 0.0;
 
+	[ProtoIgnore] private readonly object _lock = new();
+
 	public void Update(double ppt) {
-		if (ppt < MinPpt) MinPpt = ppt;
-		if (ppt > MaxPpt) MaxPpt = ppt;
+		lock (_lock) {
+			if (ppt < MinPpt) MinPpt = ppt;
+			if (ppt > MaxPpt) MaxPpt = ppt;
+		}
 	}
 }
 
@@ -102,7 +106,6 @@ public class PptTracker : ModSystem {
 		sapi.WorldManager.SaveGame.StoreData(SaveKey, SerializerUtil.Serialize(dataToSave, ms));
 
 		Mod.Logger.Debug($"[BetterErProspecting] Saved ppt data for {dataToSave.Count} ore codes");
-		oreData.Clear();
 	}
 
 	private void OnClientReceivedFullData(PptDataPacket packet) {
@@ -179,12 +182,16 @@ public class PptTracker : ModSystem {
 	}
 
 	public double GetAdjustedFactor(OreReading reading) {
-		if (reading?.DepositCode == null || reading.DepositCode.StartsWith("rock-") || !oreData.ContainsKey(reading.DepositCode)) {
+		if (reading?.DepositCode == null || reading.DepositCode.StartsWith("rock-")) {
 			return reading?.TotalFactor ?? 0.0;
 		}
 
-		if (!oreData.TryGetValue(reading.DepositCode, out var data) || Math.Abs(data.MaxPpt - data.MinPpt) < 0.0001) {
-			// First reading
+		if (!oreData.TryGetValue(reading.DepositCode, out var data)) {
+			return reading.TotalFactor;
+		}
+
+		if (Math.Abs(data.MaxPpt - data.MinPpt) < 0.0001) {
+			// First reading or no variance
 			return 1.0;
 		}
 
