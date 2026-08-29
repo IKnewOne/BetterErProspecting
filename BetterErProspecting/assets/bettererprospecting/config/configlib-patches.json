@@ -190,7 +190,7 @@
       "default": 8,
       "range": {
         "min": 0,
-        "max": 10
+        "max": 32
       },
       "weight": 14.25
     },
