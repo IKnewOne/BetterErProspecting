@@ -14,7 +14,7 @@ namespace BetterErProspecting.Patches.Stone;
 // Sorts readings by locale name
 // Filters out rock readings from WPs if not enabled
 [HarmonyPatch(typeof(OreMapLayer), nameof(OreMapLayer.ComposeDialogExtras))]
-[HarmonyPatchCategory(nameof(BetterErProspect.PatchCategory.Always))]
+[HarmonyPatchCategory(nameof(PatchManager.PatchCategory.Always))]
 public class ComposeDialogExtrasPatch {
     static bool Prefix(OreMapLayer __instance, GuiDialogWorldMap guiDialogWorldMap, GuiComposer compo) {
         var stoneReadingsEnabled = BetterErProspect.Config.StoneSearchCreatesReadings;

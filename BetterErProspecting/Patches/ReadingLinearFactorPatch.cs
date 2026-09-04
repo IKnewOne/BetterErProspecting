@@ -9,7 +9,7 @@ using Vintagestory.GameContent;
 namespace BetterErProspecting.Patches;
 
 [HarmonyPatch(typeof(PropickReading), "ToHumanReadable")]
-[HarmonyPatchCategory(nameof(BetterErProspect.PatchCategory.Always))]
+[HarmonyPatchCategory(nameof(PatchManager.PatchCategory.Always))]
 public class ReadingLinearFactorPatch {
 	static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
 		// We're looking for the pattern:

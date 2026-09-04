@@ -9,7 +9,7 @@ using Vintagestory.GameContent;
 namespace BetterErProspecting.Patches;
 
 [HarmonyPatch(typeof(PropickReading), "ToHumanReadable")]
-[HarmonyPatchCategory(nameof(BetterErProspect.PatchCategory.Always))]
+[HarmonyPatchCategory(nameof(PatchManager.PatchCategory.Always))]
 public class ReadingToHumanReadableStone {
     static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
         // We want to insert before source.Add(...) at line 70:

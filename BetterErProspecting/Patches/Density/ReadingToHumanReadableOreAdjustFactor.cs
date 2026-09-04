@@ -6,7 +6,7 @@ using Vintagestory.GameContent;
 namespace BetterErProspecting.Patches;
 
 [HarmonyPatch(typeof(PropickReading), "ToHumanReadable")]
-[HarmonyPatchCategory(nameof(BetterErProspect.PatchCategory.NewDensity))]
+[HarmonyPatchCategory(nameof(PatchManager.PatchCategory.NewDensity))]
 public class ReadingToHumanReadableOreAdjustFactor {
 	static void Prefix(PropickReading __instance) {
 		if (__instance?.OreReadings == null || BetterErProspect.Api == null)

@@ -16,7 +16,7 @@ namespace BetterErProspecting.Patches.Compat.ProspectTogether;
 
 // Changes scaling
 [HarmonyPatch(typeof(OreMapLayer), nameof(OreMapLayer.OnDataFromServer))]
-[HarmonyPatchCategory(nameof(BetterErProspect.PatchCategory.ProspectTogetherCompat))]
+[HarmonyPatchCategory(nameof(PatchManager.PatchCategory.ProspectTogetherCompat))]
 public class OreMapLayerPatch {
     [HarmonyPrefix]
     [MethodImpl(MethodImplOptions.NoInlining)] // !!!!!

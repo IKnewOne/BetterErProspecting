@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BetterErProspecting.Config;
 using BetterErProspecting.Item.Data;
 using BetterErProspecting.Prospecting;
 using BetterErProspecting.Tracking;
@@ -56,7 +57,7 @@ public sealed partial class ItemBetterErProspectingPick : ItemProspectingPick {
         RegenerateToolModes();
 
 
-        BetterErProspect.ReloadTools += RegenerateToolModes;
+        ConfigManager.ReloadTools += RegenerateToolModes;
     }
 
     public void RegenerateToolModes() {

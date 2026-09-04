@@ -8,7 +8,7 @@ using Vintagestory.GameContent;
 namespace BetterErProspecting.Patches.Stone;
 
 [HarmonyPatch(typeof(OreMapComponent), MethodType.Constructor, typeof(int), typeof(PropickReading), typeof(OreMapLayer), typeof(ICoreClientAPI), typeof(string))]
-[HarmonyPatchCategory(nameof(BetterErProspect.PatchCategory.StoneReadings))]
+[HarmonyPatchCategory(nameof(PatchManager.PatchCategory.StoneReadings))]
 // Adds rock- and ore- grouped readings dropdown option handling
 public class OreMapComponentCtorPatch {
     static bool Prefix(OreMapComponent __instance, int waypointIndex, PropickReading reading, OreMapLayer wpLayer, ICoreClientAPI capi, string filterByOreCode) {

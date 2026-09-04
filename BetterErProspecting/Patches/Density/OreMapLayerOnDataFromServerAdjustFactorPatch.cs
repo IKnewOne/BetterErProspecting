@@ -8,7 +8,7 @@ using Vintagestory.GameContent;
 namespace BetterErProspecting.Patches.Density;
 
 [HarmonyPatch(typeof(OreMapLayer), nameof(OreMapLayer.OnDataFromServer))]
-[HarmonyPatchCategory(nameof(BetterErProspect.PatchCategory.NewDensity))]
+[HarmonyPatchCategory(nameof(PatchManager.PatchCategory.NewDensity))]
 public class OreMapLayerOnDataFromServerAdjustFactorPatch {
     [HarmonyPrefix]
     [HarmonyPriority(Priority.First)]

@@ -8,7 +8,7 @@ using Vintagestory.GameContent;
 namespace BetterErProspecting.Patches.Stone;
 
 [HarmonyPatch(typeof(OreMapLayer), nameof(OreMapLayer.RebuildMapComponents))]
-[HarmonyPatchCategory(nameof(BetterErProspect.PatchCategory.Always))]
+[HarmonyPatchCategory(nameof(PatchManager.PatchCategory.Always))]
 // Always because we want to be able to manipulate and hide rock reading components when they get disabled after being enabled and created
 public class RebuildMapComponentsPatch {
     private static readonly MethodInfo GetTotalFactorMethod = AccessTools.Method(typeof(PropickReading), "GetTotalFactor");
