@@ -111,9 +111,14 @@ def _build(setting: dict, modid: str, imm_type: str) -> dict:
         "Label": _localize(modid, setting.get("ingui")) or setting["code"],
         "DefaultValueJson": setting.get("default")
     }
+    clientSide = setting.get("clientSide", false)
+    if clientSide:
+        result["ConfigSide"] = "Client"
+
     description = _localize(modid, setting.get("comment"))
     if description:
         result["Description"] = description
+
     result["Map"] = setting["code"]
     return result
 
