@@ -1,0 +1,194 @@
+{
+  "Configuration": [
+    {
+      "ConfigFile": "BetterErProspecting.json",
+      "ConfigLabel": "BetterEr Prospecting",
+      "ConfigSource": "ModConfig",
+      "ConfigSide": "Server",
+      "Settings": [
+        {
+          "Type": "Boolean",
+          "Label": "bettererprospecting:EnableDensityMode-setting",
+          "DefaultValueJson": true,
+          "Description": "bettererprospecting:EnableDensityMode-description",
+          "Map": "EnableDensityMode"
+        },
+        {
+          "Type": "Boolean",
+          "Label": "bettererprospecting:OneShotDensity-setting",
+          "DefaultValueJson": false,
+          "Description": "bettererprospecting:OneShotDensity-description",
+          "Map": "OneShotDensity"
+        },
+        {
+          "Type": "Boolean",
+          "Label": "bettererprospecting:NewDensityMode-setting",
+          "DefaultValueJson": true,
+          "Description": "bettererprospecting:NewDensityMode-description",
+          "Map": "NewDensityMode"
+        },
+        {
+          "Type": "Slider",
+          "Label": "bettererprospecting:NewDensityDmg-setting",
+          "DefaultValueJson": 3,
+          "Description": "bettererprospecting:NewDensityDmg-description",
+          "Map": "NewDensityDmg",
+          "Min": 1,
+          "Max": 10,
+          "Step": 1
+        },
+        {
+          "Type": "String",
+          "Label": "bettererprospecting:DensityBlackListedOres-setting",
+          "DefaultValueJson": "flint, quartz",
+          "Description": "bettererprospecting:DensityBlackListedOres-description",
+          "Map": "DensityBlackListedOres"
+        },
+        {
+          "Type": "Boolean",
+          "Label": "bettererprospecting:AddProximityMode-setting",
+          "DefaultValueJson": true,
+          "Description": "bettererprospecting:AddProximityMode-description",
+          "Map": "AddProximityMode"
+        },
+        {
+          "Type": "Boolean",
+          "Label": "bettererprospecting:ProximityVagueDescriptors-setting",
+          "DefaultValueJson": false,
+          "Description": "bettererprospecting:ProximityVagueDescriptors-description",
+          "Map": "ProximityVagueDescriptors"
+        },
+        {
+          "Type": "Slider",
+          "Label": "bettererprospecting:ProximitySearchRadius-setting",
+          "DefaultValueJson": 5,
+          "Description": "bettererprospecting:ProximitySearchRadius-description",
+          "Map": "ProximitySearchRadius",
+          "Min": 1,
+          "Max": 10,
+          "Step": 1
+        },
+        {
+          "Type": "Slider",
+          "Label": "bettererprospecting:ProximityDmg-setting",
+          "DefaultValueJson": 2,
+          "Description": "bettererprospecting:ProximityDmg-description",
+          "Map": "ProximityDmg",
+          "Min": 1,
+          "Max": 10,
+          "Step": 1
+        },
+        {
+          "Type": "Boolean",
+          "Label": "bettererprospecting:AddStoneMode-setting",
+          "DefaultValueJson": true,
+          "Description": "bettererprospecting:AddStoneMode-description",
+          "Map": "AddStoneMode"
+        },
+        {
+          "Type": "Boolean",
+          "Label": "bettererprospecting:StoneSearchCreatesReadings-setting",
+          "DefaultValueJson": false,
+          "Description": "bettererprospecting:StoneSearchCreatesReadings-description",
+          "Map": "StoneSearchCreatesReadings"
+        },
+        {
+          "Type": "Boolean",
+          "Label": "bettererprospecting:StonePercentSearch-setting",
+          "DefaultValueJson": true,
+          "Description": "bettererprospecting:StonePercentSearch-description",
+          "Map": "StonePercentSearch"
+        },
+        {
+          "Type": "Integer",
+          "Label": "bettererprospecting:StoneSearchRadius-setting",
+          "DefaultValueJson": 64,
+          "Description": "bettererprospecting:StoneSearchRadius-description",
+          "Map": "StoneSearchRadius"
+        },
+        {
+          "Type": "Slider",
+          "Label": "bettererprospecting:StoneDmg-setting",
+          "DefaultValueJson": 3,
+          "Description": "bettererprospecting:StoneDmg-description",
+          "Map": "StoneDmg",
+          "Min": 1,
+          "Max": 10,
+          "Step": 1
+        },
+        {
+          "Type": "String",
+          "Label": "bettererprospecting:StoneSearchBlackList-setting",
+          "DefaultValueJson": "rock-suevite",
+          "Description": "bettererprospecting:StoneSearchBlackList-description",
+          "Map": "StoneSearchBlackList"
+        },
+        {
+          "Type": "Boolean",
+          "Label": "bettererprospecting:AddBoreHoleMode-setting",
+          "DefaultValueJson": true,
+          "Description": "bettererprospecting:AddBoreHoleMode-description",
+          "Map": "AddBoreHoleMode"
+        },
+        {
+          "Type": "Slider",
+          "Label": "bettererprospecting:BoreholeDmg-setting",
+          "DefaultValueJson": 4,
+          "Description": "bettererprospecting:BoreholeDmg-description",
+          "Map": "BoreholeDmg",
+          "Min": 1,
+          "Max": 10,
+          "Step": 1
+        },
+        {
+          "Type": "Slider",
+          "Label": "bettererprospecting:BoreholeRadius-setting",
+          "DefaultValueJson": 8,
+          "Description": "bettererprospecting:BoreholeRadius-description",
+          "Map": "BoreholeRadius",
+          "Min": 0,
+          "Max": 32,
+          "Step": 1
+        },
+        {
+          "Type": "Boolean",
+          "Label": "bettererprospecting:BoreholeWpMarker-setting",
+          "DefaultValueJson": false,
+          "Description": "bettererprospecting:BoreholeWpMarker-description",
+          "Map": "BoreholeWpMarker"
+        },
+        {
+          "Type": "Boolean",
+          "Label": "bettererprospecting:BoreholeScansOre-setting",
+          "DefaultValueJson": true,
+          "Description": "bettererprospecting:BoreholeScansOre-description",
+          "Map": "BoreholeScansOre"
+        },
+        {
+          "Type": "Boolean",
+          "Label": "bettererprospecting:BoreholeScansStone-setting",
+          "DefaultValueJson": false,
+          "Description": "bettererprospecting:BoreholeScansStone-description",
+          "Map": "BoreholeScansStone"
+        },
+        {
+          "Type": "Boolean",
+          "Label": "bettererprospecting:DebugMode-setting",
+          "DefaultValueJson": false,
+          "Description": "bettererprospecting:DebugMode-description",
+          "Map": "DebugMode"
+        },
+        {
+          "Type": "Slider",
+          "Label": "bettererprospecting:ReprospectParellelism-setting",
+          "DefaultValueJson": 0,
+          "Description": "bettererprospecting:ReprospectParellelism-description",
+          "Map": "ReprospectParellelism",
+          "Min": 0,
+          "Max": 100,
+          "Step": 1
+        }
+      ]
+    }
+  ]
+}
