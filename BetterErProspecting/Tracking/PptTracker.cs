@@ -51,7 +51,7 @@ public sealed class CreateBoreholeWpPacket {
 public class PptTracker : ModSystem {
 	public static readonly ConcurrentDictionary<string, PptData> oreData = new();
 	private const string SaveKey = "betterErProspectingPptData";
-    private const string ChannelName = "bettererprospecting";
+    private static string ChannelName => BetterErProspect.ModId;
 
     public const string ShouldReprospectNotifyKey = "betterErProspectingShouldReprospectNotify";
     public static int ShouldReprospectNotify;

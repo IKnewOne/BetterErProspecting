@@ -49,8 +49,8 @@ public sealed partial class ItemBetterErProspectingPick : ItemProspectingPick {
             new("density", "textures/icons/heatmap.svg", ProbeDensity),
             new("node", "textures/icons/rocks.svg", ProbeNode, "bettererprospecting:node"),
             new("proximity", "textures/icons/worldmap/spiral.svg", ProbeProximity, "bettererprospecting:proximity"),
-            new("stone", "textures/icons/probe_stone.svg", ProbeStone, "bettererprospecting:stone", "bettererprospecting"),
-            new("borehole", "textures/icons/probe_borehole.svg", ProbeBorehole, "bettererprospecting:borehole", "bettererprospecting")
+            new("stone", "textures/icons/probe_stone.svg", ProbeStone, "bettererprospecting:stone", BetterErProspect.ModId),
+            new("borehole", "textures/icons/probe_borehole.svg", ProbeBorehole, "bettererprospecting:borehole", BetterErProspect.ModId)
         };
 
         modModes.ForEach(m => RegisterMode(m, false));

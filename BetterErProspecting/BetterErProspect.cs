@@ -29,7 +29,7 @@ public class BetterErProspect : ModSystem {
 		Logger = Mod.Logger;
 
 		try {
-			ModConfig.Instance = api.LoadModConfig<ModConfig>(ModConfig.ConfigName) ?? new ModConfig();
+            LoadFileConfig();
             api.StoreModConfig(Config, ModConfig.ConfigName);
 		} catch (Exception) { ModConfig.Instance = new ModConfig(); }
 
@@ -38,6 +38,13 @@ public class BetterErProspect : ModSystem {
         api.RegisterItemClass("ItemProspectingPick", typeof(ItemBetterErProspectingPick));
         Logger.Debug("ItemProspectingPick item re-registered to mod's implementation");
 	}
+
+    public static void LoadFileConfig() {
+        ModConfig.Instance = Api.LoadModConfig<ModConfig>(ModConfig.ConfigName);
+        if (ModConfig.Instance != null) return;
+        ModConfig.Instance = new ModConfig();
+        Logger.Error("Failed to load config from file. Creating a default config");
+    }
 
 
 

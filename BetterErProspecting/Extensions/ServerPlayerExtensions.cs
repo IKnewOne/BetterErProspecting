@@ -4,8 +4,6 @@ using Vintagestory.API.Server;
 namespace BetterErProspecting.Extensions;
 
 public static class ServerPlayerExtensions {
-    private const string modid = "bettererprospecting";
-
     public static string L(this IServerPlayer player, string key, params object[] args) {
         return Lang.GetL(player.LanguageCode, prefix(key), args);
     }
@@ -28,7 +26,7 @@ public static class ServerPlayerExtensions {
 
     private static string prefix(string message) {
         if (!message.Contains(':')) {
-            message = $"{modid}:{message}";
+            message = $"{BetterErProspect.ModId}:{message}";
         }
 
         // This is a crutch because i didn't consider passing complete strings from outside mods; i.e. they already went through Lang.Get()

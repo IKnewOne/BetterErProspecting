@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+      <Reference Include="ConfigKit">
+          <HintPath>..\..\VSLibs\dlls\ConfigKit.dll</HintPath>
+          <Private>false</Private>
+      </Reference>
     <Reference Include="configlib">
         <HintPath>$(VSLIBS)\dlls\configlib.dll</HintPath>
 		<Private>false</Private>
